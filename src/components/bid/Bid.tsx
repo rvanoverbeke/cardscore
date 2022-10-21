@@ -1,36 +1,26 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Grid from '@mui/material/Unstable_Grid2';
 import './Bid.scss';
-import { ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { ToggleButton } from '@mui/material';
 import IGame from '../../lib/types/IGame';
 import getNextPlayer from '../../lib/helpers/helpers';
 
 type BidProps = {
     game: IGame,
-    callback?: any
+    callback: any
 }
 
 function Bid(props:BidProps) {
-    const [done, setDone] = useState(false);
-    const [player, setPlayer] = useState(props.game.startPlayer);
-    const [sumBids, setSumBids] = useState(0);
     
-    let resetBid = ()  => {
-        console.log("Reset", player);
-        let nextPlayer = getNextPlayer(props.game, player)
-        setPlayer(getNextPlayer(props.game, nextPlayer));
-        setSumBids(0);
-        setDone(false);
-    }
-
     const handleChange = (event: any, newValue: number|undefined) => {
-        if (newValue != undefined) {
+        if (newValue !== undefined) {
             setBid(newValue);
         }
     };
 
     let isValidBid = (bid:number|undefined) => {
-        if (bid == undefined) {
+        let player = props.game.playerToBid;
+        if (bid === undefined) {
             return false;
         }
         if (bid > props.game.cardsInRound) {
@@ -45,28 +35,25 @@ function Bid(props:BidProps) {
                 return false;
             }
         }
-        if (player === props.game.dealer && props.game.cardsInRound === (sumBids + bid)) {
+        if (player === props.game.dealer && props.game.cardsInRound === (props.game.roundTotalBids + bid)) {
             return false;
         }
         return true;
     }
 
     let setBid = (bidValue:number|undefined) => {
-        if (isValidBid(bidValue) && bidValue != undefined) {
-            player.bids.push(bidValue);
-            if (player === props.game.dealer) {
-                setDone(true);
-                if (props.callback) {
-                    props.callback(true, props.game);
-                }
-                resetBid();
+        if (isValidBid(bidValue) && bidValue !== undefined) {
+            props.game.playerToBid.bids.push(bidValue);
+            if (props.game.playerToBid === props.game.dealer) {
+                let nextPlayer = getNextPlayer(props.game.players, props.game.playerToBid)
+                props.game.playerToBid = getNextPlayer(props.game.players, nextPlayer);
+                props.game.roundTotalBids = 0;
+                props.callback(true, props.game);
                 return;
             }
-            setSumBids(sumBids + bidValue);
-            setPlayer(getNextPlayer(props.game, player));
-            if (props.callback) {
-                props.callback(false, props.game);
-            }
+            props.game.roundTotalBids += bidValue;
+            props.game.playerToBid = getNextPlayer(props.game.players, props.game.playerToBid);
+            props.callback(false, props.game);
         }
     }
 
@@ -83,17 +70,14 @@ function Bid(props:BidProps) {
     return (
         <div className='bid_container'>
             <h4>
-                <span>Total bid: {sumBids}/{props.game.cardsInRound}</span>
+                <span>Total bid: {props.game.roundTotalBids}/{props.game.cardsInRound}</span>
             </h4>
-            { !done ?  
             <div>
-                <div><h2>{player.name} to bid</h2></div>
+                <div><h2>{props.game.playerToBid.name} to bid</h2></div>
                 <Grid container>
                     {playerBids}
                 </Grid>
             </div>
-        :null}
-                
         </div>
     );
 }

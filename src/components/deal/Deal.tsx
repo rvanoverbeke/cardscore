@@ -1,14 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import IGame from '../../lib/types/IGame';
 import Grid from '@mui/material/Unstable_Grid2';
 
 import './Deal.scss';
 import { ToggleButton } from '@mui/material';
-import { Box } from '@mui/system';
 
 type DealProps = {
     game: IGame,
-    callback?: any
+    callback: any
 }
 
 function Deal(props:DealProps) {
@@ -29,9 +28,7 @@ function Deal(props:DealProps) {
     let dealPattern = getDealerInfo(props.game.cardsInRound);
 
     let dealingDone = () => {
-        if (props.callback) {
-            props.callback();
-        }
+        props.callback(props.game);
     }
 
     let dealer = props.game.dealer;

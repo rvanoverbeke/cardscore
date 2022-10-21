@@ -6,33 +6,21 @@ import IGame from '../../lib/types/IGame';
 
 type HandProps = {
     game: IGame,
-    callback?: any
+    callback: any
 }
 
 function Hand(props:HandProps) {
-    const [done, setDone] = useState(false);
-    const [hand, setHand] = useState(1);
     
-    let resetHand = ()  => {
-        setDone(false);
-    }
-
     const handleChange = (event: any, newValue: number|undefined) => {
-        if (newValue != undefined) {
+        if (newValue !== undefined) {
             let player = props.game.players[newValue];
             player.hands[props.game.round-1]++;
-            if (hand === props.game.cardsInRound) {
-                setDone(true);
-                if (props.callback) {
-                    props.callback(true, props.game);
-                }
-                resetHand();
+            if (props.game.roundCurrentHand === props.game.cardsInRound) {
+                props.callback(true, props.game);
                 return;
             }
-            setHand(hand + 1);
-            if (props.callback) {
-                props.callback(false, props.game);
-            }
+            props.game.roundCurrentHand++;
+            props.callback(false, props.game);
             console.log(player.name, player.hands);
         }
     };
@@ -43,7 +31,6 @@ function Hand(props:HandProps) {
         if (player.hands.length < props.game.round) {
             player.hands.push(0);
         }
-        console.log('player', player);
         playerButtons.push(
             <Grid xs={4} md={3}><ToggleButton className="player_name" fullWidth={true} value={i} onClick={handleChange} ><h1>{player.name}</h1></ToggleButton></Grid>
         )
@@ -51,15 +38,12 @@ function Hand(props:HandProps) {
 
     return (
         <div className='hand_container'>
-            { !done ?  
             <div>
-                <div><h1>Hand {hand} of {props.game.cardsInRound}</h1></div>
+                <div><h1>Hand {props.game.roundCurrentHand} of {props.game.cardsInRound}</h1></div>
                 <Grid container>
                     {playerButtons}
                 </Grid>
             </div>
-        :<h1>Done</h1>}
-                
         </div>
     );
 }

@@ -1,6 +1,5 @@
-import { AppBar, BottomNavigation, BottomNavigationAction, Button, Dialog, DialogContent, DialogContentText, DialogTitle, IconButton, ToggleButton, Toolbar } from '@mui/material';
+import { AppBar, Dialog, DialogContent, DialogContentText, DialogTitle, IconButton, ToggleButton, Toolbar } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import Grid from '@mui/material/Unstable_Grid2';
 import './App.scss';
 import Deal from './components/deal/Deal';
 import Player from './components/player/Player';
@@ -10,23 +9,30 @@ import getNextPlayer from './lib/helpers/helpers';
 import IGame from './lib/types/IGame';
 import CancelTwoToneIcon from '@mui/icons-material/CancelTwoTone';
 import FavoriteTwoToneIcon from '@mui/icons-material/FavoriteTwoTone';
+import UndoTwoToneIcon from '@mui/icons-material/UndoTwoTone';
 
 import IPlayer from './lib/types/IPlayer';
 import Hand from './components/hand/Hand';
 import { Container } from '@mui/system';
+const _ = require('lodash');
 
 function App() {
   const TOTAL_CARDS = 51; // 52 cards, but we need to always have at least one extra for trump
   const STARTING_CARDS = 3;
   const POINTS_CORRECT = 5;
+  const STATE_DEALING = 'DEALING';
+  const STATE_BIDDING = 'BIDDING';
+  const STATE_PLAYING = 'PLAYING';
 
   const [game, setGame] = useState<IGame|undefined>(undefined);
-  const [dealingOpen, setDealingOpen] = useState(false);
-  const [biddingOpen, setBiddingOpen] = useState(false);
-  const [handsOpen, setHandsOpen] = useState(false);
+  const [history, setHistory] = useState<(IGame|undefined)[]>([]);
   const [endOfRound, setEndOfRound] = useState(false);
   const [playerScores, setPlayerScores] = useState<any>([]);
   const [gameOver, setGameOver] = useState(false);
+
+  useEffect(() => {
+    console.log('History:', history.length, [...history]);
+  }, [history]);
 
   let initPlayers = (playerNames: string[], dealer: number) => {
     let newPlayers:IPlayer[] = [];
@@ -42,31 +48,28 @@ function App() {
 
   let newGame = () => {
     setGame(undefined);
+    setHistory([]);
     setGameOver(false);
-    setBiddingOpen(false);
-    setHandsOpen(false);
   }
 
-
   let startGame = (players: IPlayer[], dealerIdx: number) => {
-    let startPlayerIdx = dealerIdx + 1;
-    if (startPlayerIdx >= players.length) {
-      startPlayerIdx = 0;
-    }
+    let dealer = players[dealerIdx];
+    let playerToStart = getNextPlayer(players, dealer);
     let maxCards = (TOTAL_CARDS / players.length >> 0);
     let newGame:IGame = {
       players: players,
       maxCards: maxCards,
       round: 1,
       cardsInRound: STARTING_CARDS,
+      roundTotalBids: 0,
+      roundCurrentHand: 1,
       maxReached: false,
-      dealer: players[dealerIdx],
-      startPlayer: players[startPlayerIdx]
+      dealer: dealer,
+      playerToStart: playerToStart,
+      playerToBid: playerToStart,
+      gameState: STATE_DEALING
     }
-    setGame(newGame);
-    setDealingOpen(true);
-    setBiddingOpen(false);
-    setHandsOpen(false);
+    copyGame(newGame);
   }
 
   let nextRound = () => {
@@ -79,10 +82,13 @@ function App() {
     }
     let newGame = game;
     newGame.round++;
-    newGame.dealer = getNextPlayer(newGame);
-    newGame.startPlayer = getNextPlayer(newGame, newGame.dealer);
+    newGame.roundTotalBids = 0;
+    newGame.roundCurrentHand = 1;
+    newGame.dealer = getNextPlayer(newGame.players, newGame.dealer);
+    newGame.playerToStart = getNextPlayer(newGame.players, newGame.dealer);
+    newGame.playerToBid = newGame.playerToStart;
     console.log('dealer', newGame.dealer);
-    console.log('startPlayer', newGame.startPlayer);
+    console.log('startPlayer', newGame.playerToStart);
     if (newGame.cardsInRound === newGame.maxCards) {
       newGame.maxReached = true;
     }
@@ -92,30 +98,32 @@ function App() {
       newGame.cardsInRound++;
     }
     console.log(newGame);
-    setGame(newGame);
-    setDealingOpen(true);
-    setBiddingOpen(false);
-    setHandsOpen(false);
+    newGame.gameState = STATE_DEALING;
+    copyGame(newGame);
   }
 
-  let dealtCallback = () => {
-    setDealingOpen(false);
-    setBiddingOpen(true);
-    setHandsOpen(false);
+  let copyGame = (newGame:IGame|undefined) => {
+    let deepCopyGame1 = _.cloneDeep(newGame);
+    let deepCopyGame2 = _.cloneDeep(newGame);
+    setGame(deepCopyGame1);
+    setHistory([...history, deepCopyGame2]);
   }
 
+  let dealtCallback = (newGame: IGame) => {
+    newGame.gameState = STATE_BIDDING;
+    copyGame(newGame);
+  }
 
   let bidCallback = (biddingDone:false, newGame:IGame) => {
-    setGame({...newGame});
     if (biddingDone) {
       console.log("Bidding done");
-      setBiddingOpen(false);
-      setHandsOpen(true);
+      newGame.gameState = STATE_PLAYING;
     }
+    copyGame(newGame);
   }
 
   let handCallback = (roundDone:false, newGame:IGame) => {
-    setGame({...newGame});
+    copyGame(newGame);
     if (roundDone) {
       calculateScore(newGame);
     }
@@ -129,7 +137,6 @@ function App() {
       let hands = player.hands[newGame.round-1];
       let diff = Math.abs(bid - hands)
       let score = diff === 0 ? (POINTS_CORRECT + bid) : 0 - diff;
-      console.log(player.name, bid, hands, diff, score);
       player.score += score;
       
       newPlayerScores.push({name: player.name, score:score});
@@ -142,6 +149,14 @@ function App() {
   let closeDialog = () => {
     setEndOfRound(false);
     nextRound();
+  }
+
+  let goBack = () => {
+    console.log('UNDO');
+    console.log('history 1', [...history]);
+    history.pop();  // current Game
+    let previousGame = history.pop();
+    copyGame(previousGame);
   }
 
   let content:any;
@@ -172,7 +187,8 @@ function App() {
         <Toolbar>
           <FavoriteTwoToneIcon />
           <h3 className="toolbar_title">Chinees Poepen</h3>
-          <Button variant="outlined" onClick={endGame} size="large" startIcon={<CancelTwoToneIcon />}>End Game</Button>
+          <IconButton disabled={ history.length === 1 } onClick={goBack}><UndoTwoToneIcon /></IconButton>
+          <IconButton onClick={endGame}><CancelTwoToneIcon /></IconButton>
         </Toolbar>
       </AppBar>
       <div>&nbsp;</div>
@@ -188,9 +204,9 @@ function App() {
                   <span> | </span>
                   <span>Max cards: {game.maxCards}</span>
                 </h3>
-                { dealingOpen ?<Deal game={game} callback={dealtCallback} />:null }
-                { biddingOpen ?<Bid game={game} callback={bidCallback} />:null }
-                { handsOpen ?<Hand game={game} callback={handCallback} />:null }
+                { game.gameState === STATE_DEALING ?<Deal game={game} callback={dealtCallback} />:null }
+                { game.gameState === STATE_BIDDING ?<Bid game={game} callback={bidCallback} />:null }
+                { game.gameState === STATE_PLAYING ?<Hand game={game} callback={handCallback} />:null }
                 <Dialog open={endOfRound} onClose={closeDialog}>
                   <DialogTitle>End of round {game.round}</DialogTitle>
                   <DialogContent>

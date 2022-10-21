@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import AccountCircleTwoToneIcon from '@mui/icons-material/AccountCircleTwoTone';
+import React from 'react';
 import Grid from '@mui/material/Unstable_Grid2';
 
 import './ScoreBoard.scss';
@@ -11,10 +10,9 @@ type ScoreBoardProps = {
 }
 
 function ScoreBoard(props:ScoreBoardProps) {
-    const [players, setPlayers] = useState(props.game.players);
 
     let scoreItems:any = [];
-    players.forEach(player => {
+    props.game.players.forEach(player => {
         let bid = '-'
         if (player.bids.length === props.game.round) {
             bid = '' + player.bids[props.game.round -1];

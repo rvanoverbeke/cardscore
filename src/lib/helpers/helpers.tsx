@@ -1,15 +1,11 @@
-import IGame from "../types/IGame";
 import IPlayer from "../types/IPlayer";
 
-function getNextPlayer(game:IGame, player?: IPlayer) {
-    if (!player) {
-        player = game.dealer;
-    }
-    let idx = game.players.indexOf(player);
-    if (++idx === game.players.length) {
+function getNextPlayer(players:IPlayer[], player: IPlayer) {
+    let idx = players.indexOf(player);
+    if (++idx === players.length) {
         idx = 0;
     }
-    return game.players[idx];
+    return players[idx];
 }
 
 export default getNextPlayer;
