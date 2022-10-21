@@ -1,0 +1,23 @@
+.player_container {
+    font-size: x-large;
+    padding: 10px;
+    .button {
+        background-color: azure;
+        color: black;
+
+        &:active {
+            background-color: azure;
+            color: black;
+        }
+
+        &:disabled {
+            background-color: lightgray;
+            color: white;
+        }
+    }
+}
+
+.player_error {
+    font-weight: bold;
+    color: red;
+}

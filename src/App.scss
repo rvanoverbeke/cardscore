@@ -1,0 +1,16 @@
+html, body {
+  background-color: green;
+  margin: 10px;
+}
+
+
+.App {
+  text-align: center;
+  padding: 10px;
+  background-color: aliceblue;
+
+  .toolbar_title{
+    flex-grow: 1;
+  }
+}
+
