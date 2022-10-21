@@ -1,0 +1,16 @@
+.bid_container {
+    .bid_button {
+        background-color: azure;
+        color: black;
+
+        &:active {
+            background-color: azure;
+            color: black;
+        }
+
+        &:disabled {
+            background-color: lightgray;
+            color: white;
+        }
+    }
+}
