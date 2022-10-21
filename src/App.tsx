@@ -7,7 +7,7 @@ import Bid from './components/bid/Bid';
 import ScoreBoard from './components/scoreboard/ScoreBoard';
 import getNextPlayer from './lib/helpers/helpers';
 import IGame from './lib/types/IGame';
-import CancelTwoToneIcon from '@mui/icons-material/CancelTwoTone';
+import LogoutTwoToneIcon from '@mui/icons-material/LogoutTwoTone';
 import FavoriteTwoToneIcon from '@mui/icons-material/FavoriteTwoTone';
 import UndoTwoToneIcon from '@mui/icons-material/UndoTwoTone';
 
@@ -38,7 +38,7 @@ function App() {
   let initPlayers = (playerNames: string[], dealer: number) => {
     let newPlayers:IPlayer[] = [];
     playerNames.forEach(playerName => {
-      newPlayers.push({name: playerName, score: 0, bids: [], hands: []})
+      newPlayers.push({name: playerName, score: 0, bids: [], hands: [], zeroBids: 0})
     });
     startGame(newPlayers, dealer);
   }
@@ -46,6 +46,7 @@ function App() {
   let newGame = () => {
     setGame(undefined);
     setHistory([]);
+    setExitDialog(false);
     setGameOver(false);
   }
 
@@ -197,7 +198,7 @@ function App() {
           <FavoriteTwoToneIcon />
           <h3 className="toolbar_title">Chinees Poepen</h3>
           <IconButton disabled={ history.length === 1 } onClick={goBack}><UndoTwoToneIcon /></IconButton>
-          <IconButton onClick={endGameDialog}><CancelTwoToneIcon /></IconButton>
+          <IconButton onClick={endGameDialog}><LogoutTwoToneIcon /></IconButton>
         </Toolbar>
       </AppBar>
       <div>&nbsp;</div>

@@ -31,7 +31,7 @@ function Bid(props:BidProps) {
         }
         if (player.bids.length >= 3) {
             let i = player.bids.length - 1;
-            if (bid === 0 && player.bids[i] === 0 && player.bids[i-1] === 0 && player.bids[i-2] === 0 ) {
+            if (bid === 0 && player.zeroBids === 3 ) {
                 return false;
             }
         }
@@ -43,15 +43,20 @@ function Bid(props:BidProps) {
 
     let setBid = (bidValue:number|undefined) => {
         if (isValidBid(bidValue) && bidValue !== undefined) {
+            let finalBid = (props.game.playerToBid === props.game.dealer);
             props.game.playerToBid.bids.push(bidValue);
-            if (props.game.playerToBid === props.game.dealer) {
-                let nextPlayer = getNextPlayer(props.game.players, props.game.playerToBid)
-                props.game.playerToBid = getNextPlayer(props.game.players, nextPlayer);
+            props.game.roundTotalBids += bidValue;
+            if (bidValue === 0) {
+                props.game.playerToBid.zeroBids++;
+            } else {
+                props.game.playerToBid.zeroBids = 0;
+            }
+            props.game.playerToBid = getNextPlayer(props.game.players, props.game.playerToBid);
+            if (finalBid) {
+                props.game.playerToBid = getNextPlayer(props.game.players, props.game.playerToBid);
                 props.callback(true, props.game);
                 return;
             }
-            props.game.roundTotalBids += bidValue;
-            props.game.playerToBid = getNextPlayer(props.game.players, props.game.playerToBid);
             props.callback(false, props.game);
         }
     }

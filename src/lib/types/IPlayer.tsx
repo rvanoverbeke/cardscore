@@ -3,4 +3,5 @@ export default interface IPlayer {
     score: number,
     bids: number[],
     hands: number[]
+    zeroBids: number
 }

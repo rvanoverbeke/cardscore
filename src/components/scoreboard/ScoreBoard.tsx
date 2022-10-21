@@ -3,6 +3,7 @@ import Grid from '@mui/material/Unstable_Grid2';
 
 import './ScoreBoard.scss';
 import IGame from '../../lib/types/IGame';
+import { Badge } from '@mui/material';
 
 
 type ScoreBoardProps = {
@@ -21,17 +22,16 @@ function ScoreBoard(props:ScoreBoardProps) {
         if (player.hands.length === props.game.round) {
             roundScore = '' + player.hands[props.game.round -1];
         }
+
         scoreItems.push(
-            <Grid xs={6} md={3}>
+            <Grid xs={12} sm={6} md={3}>
                 <Grid container spacing={2} className="player_score_container">
-                    <Grid xs={7} className='player_name'>{player.name}</Grid>
-                    <Grid xs={5} className='player_score'>
-                        <span className='player_round_bid'>({bid})</span>
-                        <span> </span>
-                        <span className='player_round_score'>{roundScore}</span>
-                        <span> | </span>
-                        <span className='player_total_score'>{player.score}</span>
-                    </Grid>
+                    <Grid xs={8} className='player_name'>{player.name}</Grid>
+                    <Badge badgeContent={player.zeroBids} color={player.zeroBids >= 2 ? 'warning': 'default'}>
+                        <Grid xs={2} className='player_round_bid'>({bid})</Grid>
+                    </Badge>
+                    <Grid xs={1} className='player_round_score'>{roundScore}</Grid>
+                    <Grid xs={1} className='player_total_score'>{player.score}</Grid>
                 </Grid>
             </Grid>
         );

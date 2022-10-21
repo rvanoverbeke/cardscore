@@ -20,15 +20,23 @@
         text-overflow: ellipsis;
     }
 
-    .player_score {
-        text-align: right;
+    .player_round_bid, .player_round_score, .player_total_score {
+        text-align: center;
     }
-    .player_round_bid {
+
+    .player_total_score {
+        border-left: 1px solid lightgray;
+    }
+
+    .player_round_bid, .player_round_score{
         font-size: small;
         font-weight: normal;
     }
-    .player_round_score {
-        font-size: small;
-        font-weight: normal;
+    .badge_ok {
+        background-color: transparent;
     }
+    .badge_warning {
+        background-color: orange;
+    }
+    
 }
