@@ -1,4 +1,4 @@
-import { AppBar, Dialog, DialogContent, DialogContentText, DialogTitle, IconButton, ToggleButton, Toolbar } from '@mui/material';
+import { AppBar, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, ToggleButton, Toolbar } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import './App.scss';
 import Deal from './components/deal/Deal';
@@ -27,6 +27,7 @@ function App() {
   const [game, setGame] = useState<IGame|undefined>(undefined);
   const [history, setHistory] = useState<(IGame|undefined)[]>([]);
   const [endOfRound, setEndOfRound] = useState(false);
+  const [exitDialog, setExitDialog] = useState(false);
   const [playerScores, setPlayerScores] = useState<any>([]);
   const [gameOver, setGameOver] = useState(false);
 
@@ -40,10 +41,6 @@ function App() {
       newPlayers.push({name: playerName, score: 0, bids: [], hands: []})
     });
     startGame(newPlayers, dealer);
-  }
-
-  let endGame = () => {
-    setGameOver(true);
   }
 
   let newGame = () => {
@@ -151,6 +148,18 @@ function App() {
     nextRound();
   }
 
+  let closeExitDialog = () => {
+    setExitDialog(false);
+  }
+
+  let endGameDialog = () => {
+    setExitDialog(true);
+  }
+
+  let endGame = () => {
+    setGameOver(true);
+  }
+
   let goBack = () => {
     console.log('UNDO');
     console.log('history 1', [...history]);
@@ -188,7 +197,7 @@ function App() {
           <FavoriteTwoToneIcon />
           <h3 className="toolbar_title">Chinees Poepen</h3>
           <IconButton disabled={ history.length === 1 } onClick={goBack}><UndoTwoToneIcon /></IconButton>
-          <IconButton onClick={endGame}><CancelTwoToneIcon /></IconButton>
+          <IconButton onClick={endGameDialog}><CancelTwoToneIcon /></IconButton>
         </Toolbar>
       </AppBar>
       <div>&nbsp;</div>
@@ -220,6 +229,18 @@ function App() {
                       }
                     </DialogContentText>
                   </DialogContent>
+                </Dialog>
+                <Dialog open={exitDialog} onClose={closeExitDialog}>
+                  <DialogTitle>End game?</DialogTitle>
+                  <DialogContent>
+                    <DialogContentText>
+                      <div>Are you sure you want to end the game?</div>
+                    </DialogContentText>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button autoFocus onClick={closeExitDialog}>No, keep playing</Button>
+                    <Button onClick={endGame}>Yes, fuck this shit</Button>
+                  </DialogActions>
                 </Dialog>
               </div>
             </div>

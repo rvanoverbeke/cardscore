@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Grid from '@mui/material/Unstable_Grid2';
 import './Bid.scss';
 import { ToggleButton } from '@mui/material';
@@ -47,7 +47,6 @@ function Bid(props:BidProps) {
             if (props.game.playerToBid === props.game.dealer) {
                 let nextPlayer = getNextPlayer(props.game.players, props.game.playerToBid)
                 props.game.playerToBid = getNextPlayer(props.game.players, nextPlayer);
-                props.game.roundTotalBids = 0;
                 props.callback(true, props.game);
                 return;
             }
