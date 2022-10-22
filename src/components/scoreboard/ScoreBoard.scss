@@ -10,9 +10,6 @@
         margin: 0px;
     }
 
-    .player_icon {
-        text-align: right;
-    }
     .player_name {
         text-align: left;
         white-space: nowrap;
@@ -21,11 +18,12 @@
     }
 
     .player_round_bid, .player_round_score, .player_total_score {
-        text-align: center;
+        text-align: left;
     }
 
     .player_total_score {
         border-left: 1px solid lightgray;
+        text-align: right;
     }
 
     .player_round_bid, .player_round_score{

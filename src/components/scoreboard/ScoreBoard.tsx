@@ -24,8 +24,8 @@ function ScoreBoard(props:ScoreBoardProps) {
         }
 
         scoreItems.push(
-            <Grid xs={12} sm={6} md={3}>
-                <Grid container spacing={2} className="player_score_container">
+            <Grid xs={6} sm={4} md={3}>
+                <Grid container spacing={0} className="player_score_container">
                     <Grid xs={8} className='player_name'>{player.name}</Grid>
                     <Badge badgeContent={player.zeroBids} color={player.zeroBids >= 2 ? 'warning': 'default'}>
                         <Grid xs={2} className='player_round_bid'>({bid})</Grid>

@@ -30,7 +30,6 @@ function Bid(props:BidProps) {
             return false;
         }
         if (player.bids.length >= 3) {
-            let i = player.bids.length - 1;
             if (bid === 0 && player.zeroBids === 3 ) {
                 return false;
             }
