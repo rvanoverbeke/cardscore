@@ -178,16 +178,18 @@ function App() {
     let sortedPlayers = [...game.players];
     sortedPlayers.sort((a, b) => a.score > b.score ? -1: 1);
     content = (
-      <div>
-        <h1>Game Over</h1>
-        {
-          sortedPlayers.map((player:IPlayer, idx:number) => (
-            <h2 key={idx} className='gameover_container'>
-                <span>{player.name}: {player.score}</span>
-            </h2>
-          ))
-        }
-        <div><ToggleButton fullWidth={true} value={'newGame'} onClick={newGame} ><h3>Start New Game</h3></ToggleButton></div>
+      <div className='gameover_container'>
+        <div className='gameover_inner_container'>
+          <h1>Game Over</h1>
+          {
+            sortedPlayers.map((player:IPlayer, idx:number) => (
+              <h2 key={idx}>
+                  <span>{player.name}: {player.score}</span>
+              </h2>
+            ))
+          }
+          <div><ToggleButton fullWidth={true} value={'newGame'} onClick={newGame} ><h3>Start New Game</h3></ToggleButton></div>
+        </div>
       </div>
     );
   } else {
@@ -213,6 +215,7 @@ function App() {
                   <span>Dealer: {game.dealer.name}</span>
                   <span> | </span>
                   <span>Max cards: {game.maxCards}</span>
+                  { game.gameState === STATE_PLAYING? <span> | Total Bids: {game.roundTotalBids}/{game.cardsInRound}</span>:null }
                 </h3>
                 { game.gameState === STATE_DEALING ?<Deal game={game} callback={dealtCallback} />:null }
                 { game.gameState === STATE_BIDDING ?<Bid game={game} callback={bidCallback} />:null }

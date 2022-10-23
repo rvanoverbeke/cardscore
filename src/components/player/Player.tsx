@@ -10,7 +10,7 @@ type playerProps = {
 }
 
 function Player(props:playerProps) {
-    const [players, setPlayers] = useState(["Player 1", "Player 2", "Player 3", "Player 4"])
+    const [players, setPlayers] = useState(["", "", "", ""])
     const [dealer, setDealer] = useState<number|undefined>(undefined);
 
     let handleChange = (idx:number, elem:any) => {
@@ -71,10 +71,10 @@ function Player(props:playerProps) {
            <div className="button-section">
             <Grid container>
                 <Grid xs={6}>
-                    <ToggleButton className='button' fullWidth={true} value={'add'} onClick={addPlayer} ><h1>Add player</h1></ToggleButton>
+                    <ToggleButton className='colored_button' fullWidth={true} value={'add'} onClick={addPlayer} ><h1>Add player</h1></ToggleButton>
                 </Grid>
                 <Grid xs={6}>
-                    <ToggleButton disabled={dealer === undefined || dealer >= players.length || players.includes('')} className='button' fullWidth={true} type="submit" value={'submit'}><h1>Play!</h1></ToggleButton>
+                    <ToggleButton className='colored_button' disabled={dealer === undefined || dealer >= players.length || players.includes('')} fullWidth={true} type="submit" value={'submit'}><h1>Play!</h1></ToggleButton>
                 </Grid>
             </Grid>
           </div>

@@ -3,6 +3,24 @@ html, body {
   margin: 10px;
 }
 
+.colored_button {
+  background-color: azure !important;
+  color: black !important;
+
+  &:active, &:focus {
+      background-color: azure !important;
+      color: black !important;
+  }
+  &:hover {
+      background-color: skyblue !important;
+      color: black !important;
+  }
+  &:disabled {
+      background-color: lightgray !important;
+      color: white !important;
+  }
+}
+
 
 .App {
   text-align: center;
@@ -12,5 +30,15 @@ html, body {
   .toolbar_title{
     flex-grow: 1;
   }
+  .gameover_container {
+    background-image: url('../public/fireworks.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center center; 
+  }
+  .gameover_inner_container {
+    background-color: rgba(240, 248, 255, 50%);
+  }
 }
+
 

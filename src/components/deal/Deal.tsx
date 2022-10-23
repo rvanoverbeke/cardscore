@@ -47,7 +47,7 @@ function Deal(props:DealProps) {
                 <div>{dealPattern[2]}</div>
             </Grid>
             <Grid xs={3}></Grid>
-            <Grid xs={12}><ToggleButton className="deal_button" fullWidth={true} value="" onClick={dealingDone} ><h1>Dealt!</h1></ToggleButton></Grid>
+            <Grid xs={12}><ToggleButton className='colored_button' fullWidth={true} value="" onClick={dealingDone} ><h1>Dealt!</h1></ToggleButton></Grid>
         </Grid>
     );
 }

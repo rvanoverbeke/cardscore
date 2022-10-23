@@ -65,7 +65,7 @@ function Bid(props:BidProps) {
         let validPlayerBid = isValidBid(i);
         playerBids.push(
             <Grid xs={3}>
-                <ToggleButton className='bid_button' fullWidth={true} value={i} onClick={handleChange} disabled={!validPlayerBid}><h1>{i}</h1></ToggleButton>
+                <ToggleButton className='colored_button' fullWidth={true} value={i} onClick={handleChange} disabled={!validPlayerBid}><h1>{i}</h1></ToggleButton>
             </Grid>
         )
     }
