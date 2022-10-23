@@ -7,12 +7,12 @@ html, body {
   background-color: azure !important;
   color: black !important;
 
+  &:hover {
+    background-color: skyblue !important;
+    color: black !important;
+  }
   &:active, &:focus {
       background-color: azure !important;
-      color: black !important;
-  }
-  &:hover {
-      background-color: skyblue !important;
       color: black !important;
   }
   &:disabled {
