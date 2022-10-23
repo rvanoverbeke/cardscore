@@ -3,7 +3,7 @@
         background-color: azure;
         color: black;
 
-        &:active {
+        &:active, &:focus {
             background-color: azure;
             color: black;
         }
