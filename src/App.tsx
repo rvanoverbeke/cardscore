@@ -1,4 +1,4 @@
-import { AppBar, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, ToggleButton, Toolbar } from '@mui/material';
+import { AppBar, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, MenuItem, Select, TextField, ToggleButton, Toolbar } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import './App.scss';
 import Deal from './components/deal/Deal';
@@ -10,6 +10,7 @@ import IGame from './lib/types/IGame';
 import LogoutTwoToneIcon from '@mui/icons-material/LogoutTwoTone';
 import FavoriteTwoToneIcon from '@mui/icons-material/FavoriteTwoTone';
 import UndoTwoToneIcon from '@mui/icons-material/UndoTwoTone';
+import PersonAddTwoToneIcon from '@mui/icons-material/PersonAddTwoTone';
 
 import IPlayer from './lib/types/IPlayer';
 import Hand from './components/hand/Hand';
@@ -34,6 +35,9 @@ function App() {
   });
   const [endOfRound, setEndOfRound] = useState(false);
   const [exitDialog, setExitDialog] = useState(false);
+  const [addPlayerDialog, setAddPlayerDialog] = useState(false);
+  const [newPlayerName, setNewPlayerName] = useState('');
+  const [newPlayerSeat, setNewPlayerSeat] = useState(0);
   const [playerScores, setPlayerScores] = useState<any>([]);
   const [gameOver, setGameOver] = useState<boolean>(() => {
     try { return JSON.parse(localStorage.getItem('cp_gameOver') || 'false'); }
@@ -182,6 +186,39 @@ function App() {
     setGameOver(true);
   }
 
+  let addPlayer = () => {
+    if (!game || !newPlayerName.trim()) return;
+    const minScore = Math.min(...game.players.map((p: IPlayer) => p.score));
+    const newPlayer: IPlayer = {
+      name: newPlayerName.trim(),
+      score: minScore,
+      bids: Array(game.round - 1).fill(0),
+      hands: Array(game.round - 1).fill(0),
+      zeroBids: 0
+    };
+    const newPlayers = [...game.players];
+    newPlayers.splice(newPlayerSeat, 0, newPlayer);
+    const newMaxCards = (TOTAL_CARDS / newPlayers.length >> 0);
+    const clampedCards = Math.min(game.cardsInRound, newMaxCards);
+    const dealerName = game.dealer.name;
+    const playerToStartName = game.playerToStart.name;
+    const playerToBidName = game.playerToBid.name;
+    const updatedGame: IGame = {
+      ...game,
+      players: newPlayers,
+      maxCards: newMaxCards,
+      cardsInRound: clampedCards,
+      maxReached: game.maxReached || clampedCards >= newMaxCards,
+      dealer: newPlayers.find(p => p.name === dealerName) ?? newPlayers[0],
+      playerToStart: newPlayers.find(p => p.name === playerToStartName) ?? newPlayers[0],
+      playerToBid: newPlayers.find(p => p.name === playerToBidName) ?? newPlayers[0],
+    };
+    setNewPlayerName('');
+    setNewPlayerSeat(0);
+    setAddPlayerDialog(false);
+    copyGame(updatedGame);
+  }
+
   let goBack = () => {
     console.log('UNDO');
     console.log('history 1', [...history]);
@@ -221,6 +258,7 @@ function App() {
           <FavoriteTwoToneIcon />
           <h3 className="toolbar_title">Chinees Poepen</h3>
           <IconButton disabled={ history.length === 1 } onClick={goBack}><UndoTwoToneIcon /></IconButton>
+          <IconButton disabled={ game.gameState !== STATE_DEALING } onClick={() => { setNewPlayerSeat(game.players.length); setAddPlayerDialog(true); }}><PersonAddTwoToneIcon /></IconButton>
           <IconButton onClick={endGameDialog}><LogoutTwoToneIcon /></IconButton>
         </Toolbar>
       </AppBar>
@@ -253,6 +291,35 @@ function App() {
                         ))
                       }
                   </DialogContent>
+                </Dialog>
+                <Dialog open={addPlayerDialog} onClose={() => setAddPlayerDialog(false)}>
+                  <DialogTitle>Add Player</DialogTitle>
+                  <DialogContent>
+                    <TextField
+                      autoFocus
+                      label="Player name"
+                      fullWidth
+                      value={newPlayerName}
+                      onChange={e => setNewPlayerName(e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter') addPlayer(); }}
+                      sx={{ mt: 1 }}
+                    />
+                    <Select
+                      fullWidth
+                      value={newPlayerSeat}
+                      onChange={e => setNewPlayerSeat(Number(e.target.value))}
+                      sx={{ mt: 2 }}
+                    >
+                      <MenuItem value={0}>At the start</MenuItem>
+                      {game.players.map((p: IPlayer, idx: number) => (
+                        <MenuItem key={idx} value={idx + 1}>After {p.name}</MenuItem>
+                      ))}
+                    </Select>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={() => setAddPlayerDialog(false)}>Cancel</Button>
+                    <Button disabled={!newPlayerName.trim()} onClick={addPlayer}>Add</Button>
+                  </DialogActions>
                 </Dialog>
                 <Dialog open={exitDialog} onClose={closeExitDialog}>
                   <DialogTitle>End game?</DialogTitle>
