@@ -24,16 +24,34 @@ function App() {
   const STATE_BIDDING = 'BIDDING';
   const STATE_PLAYING = 'PLAYING';
 
-  const [game, setGame] = useState<IGame|undefined>(undefined);
-  const [history, setHistory] = useState<(IGame|undefined)[]>([]);
+  const [game, setGame] = useState<IGame|undefined>(() => {
+    try { return JSON.parse(localStorage.getItem('cp_game') || 'null') ?? undefined; }
+    catch { return undefined; }
+  });
+  const [history, setHistory] = useState<(IGame|undefined)[]>(() => {
+    try { return JSON.parse(localStorage.getItem('cp_history') || 'null') ?? []; }
+    catch { return []; }
+  });
   const [endOfRound, setEndOfRound] = useState(false);
   const [exitDialog, setExitDialog] = useState(false);
   const [playerScores, setPlayerScores] = useState<any>([]);
-  const [gameOver, setGameOver] = useState(false);
+  const [gameOver, setGameOver] = useState<boolean>(() => {
+    try { return JSON.parse(localStorage.getItem('cp_gameOver') || 'false'); }
+    catch { return false; }
+  });
 
   useEffect(() => {
     console.log('History:', history.length, [...history]);
+    localStorage.setItem('cp_history', JSON.stringify(history));
   }, [history]);
+
+  useEffect(() => {
+    localStorage.setItem('cp_game', JSON.stringify(game ?? null));
+  }, [game]);
+
+  useEffect(() => {
+    localStorage.setItem('cp_gameOver', JSON.stringify(gameOver));
+  }, [gameOver]);
 
   let initPlayers = (playerNames: string[], dealer: number) => {
     let newPlayers:IPlayer[] = [];
@@ -44,6 +62,9 @@ function App() {
   }
 
   let newGame = () => {
+    localStorage.removeItem('cp_game');
+    localStorage.removeItem('cp_history');
+    localStorage.removeItem('cp_gameOver');
     setGame(undefined);
     setHistory([]);
     setExitDialog(false);
@@ -95,7 +116,6 @@ function App() {
     } else {
       newGame.cardsInRound++;
     }
-    console.log(newGame);
     newGame.gameState = STATE_DEALING;
     copyGame(newGame);
   }
@@ -112,7 +132,7 @@ function App() {
     copyGame(newGame);
   }
 
-  let bidCallback = (biddingDone:false, newGame:IGame) => {
+  let bidCallback = (biddingDone:boolean, newGame:IGame) => {
     if (biddingDone) {
       console.log("Bidding done");
       newGame.gameState = STATE_PLAYING;
@@ -120,13 +140,13 @@ function App() {
     copyGame(newGame);
   }
 
-  let handCallback = (roundDone:false, newGame:IGame) => {
+  let handCallback = (roundDone:boolean, newGame:IGame) => {
     copyGame(newGame);
     if (roundDone) {
       calculateScore(newGame);
     }
   }
-  
+
   let calculateScore = (newGame:IGame) => {
     let newPlayerScores:any[] = [];
     for (let i=0; i<newGame.players.length; i++) {
@@ -136,9 +156,10 @@ function App() {
       let diff = Math.abs(bid - hands)
       let score = diff === 0 ? (POINTS_CORRECT + bid) : 0 - diff;
       player.score += score;
-      
-      newPlayerScores.push({name: player.name, score:score});
+
+      newPlayerScores.push({name: player.name, score:score, totalScore: player.score});
       setPlayerScores(newPlayerScores);
+      console.log("PLAYER_SCORES", newPlayerScores);
     }
     setGame({...newGame});
     setEndOfRound(true);
@@ -223,15 +244,14 @@ function App() {
                 <Dialog open={endOfRound} onClose={closeDialog}>
                   <DialogTitle>End of round {game.round}</DialogTitle>
                   <DialogContent>
-                    <DialogContentText>
+                    <h2>Current Ranking</h2>
                       {
-                        playerScores.map((player:any, idx:number) => (
-                          <h2 key={idx}>
-                              <span>{player.name}: {player.score}</span>
-                          </h2>
+                        [...playerScores].sort((a: any, b: any) => b.totalScore - a.totalScore).map((player:any, idx:number) => (
+                          <h3 key={idx}>
+                              <span>{idx + 1}. {player.name}: {player.totalScore} ({player.score >=0 ? "+":""}{player.score})</span>
+                          </h3>
                         ))
                       }
-                    </DialogContentText>
                   </DialogContent>
                 </Dialog>
                 <Dialog open={exitDialog} onClose={closeExitDialog}>

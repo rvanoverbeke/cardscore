@@ -10,7 +10,7 @@ type HandProps = {
 }
 
 function Hand(props:HandProps) {
-    
+
     const handleChange = (event: any, newValue: number|undefined) => {
         if (newValue !== undefined) {
             let player = props.game.players[newValue];
@@ -32,7 +32,7 @@ function Hand(props:HandProps) {
             player.hands.push(0);
         }
         playerButtons.push(
-            <Grid xs={6} sm={4} md={3}><ToggleButton className='colored_button' fullWidth={true} value={i} onClick={handleChange} ><h1>{player.name}</h1></ToggleButton></Grid>
+            <Grid key={'player_btn_'+i} xs={6} sm={4} md={3}><ToggleButton className='colored_button' fullWidth={true} value={i} onClick={handleChange} ><h1>{player.name}</h1></ToggleButton></Grid>
         )
     }
 
