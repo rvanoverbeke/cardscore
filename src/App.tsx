@@ -111,8 +111,6 @@ function App() {
     newGame.dealer = getNextPlayer(newGame.players, newGame.dealer);
     newGame.playerToStart = getNextPlayer(newGame.players, newGame.dealer);
     newGame.playerToBid = newGame.playerToStart;
-    console.log('dealer', newGame.dealer);
-    console.log('startPlayer', newGame.playerToStart);
     if (newGame.cardsInRound === newGame.maxCards) {
       newGame.maxReached = true;
     }
