@@ -34,7 +34,7 @@ function Deal(props:DealProps) {
     let dealer = props.game.dealer;
 
     return (
-        <Grid container spacing={5} className='deal_container'>
+        <Grid container spacing={4} className='deal_container'>
             <Grid xs={12}><h1>{dealer.name} to deal {props.game.cardsInRound} cards</h1></Grid>
             <Grid xs={3}></Grid>
             <Grid xs={2} className="deal_card">

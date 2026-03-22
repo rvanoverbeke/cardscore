@@ -14,7 +14,6 @@ function ScoreBoard(props:ScoreBoardProps) {
 
     let scoreItems:any = [];
     props.game.players.forEach((player, i) => {
-        console.log("SCOREBOARD Player", player);
         let bid = '-'
         if (player.bids.length === props.game.round) {
             bid = '' + player.bids[props.game.round -1];
@@ -26,14 +25,16 @@ function ScoreBoard(props:ScoreBoardProps) {
 
         scoreItems.push(
             <Grid key={'score_container_' + i} xs={6} sm={4} md={3}>
-                <Grid container spacing={0} className="player_score_container">
-                    <Grid xs={8} className='player_name'>{player.name}</Grid>
-                    <Badge badgeContent={player.zeroBids} color={player.zeroBids >= 2 ? 'warning': 'default'}>
-                        <Grid xs={2} className='player_round_bid'>({bid})</Grid>
-                    </Badge>
-                    <Grid xs={1} className='player_round_score'>{roundScore}</Grid>
-                    <Grid xs={1} className='player_total_score'>{player.score}</Grid>
-                </Grid>
+                <div className="player_score_container">
+                    <div className='player_name'>{player.name}</div>
+                    <Grid container spacing={1}>
+                        <Badge badgeContent={player.zeroBids} color={player.zeroBids >= 2 ? 'warning': 'default'}>
+                            <Grid xs={4} className='player_round_bid'>({bid})</Grid>
+                        </Badge>
+                        <Grid xs={4} className='player_round_score'>{roundScore}</Grid>
+                        <Grid xs={4} className='player_total_score'>{player.score}</Grid>
+                    </Grid>
+                </div>
             </Grid>
         );
     });

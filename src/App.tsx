@@ -11,6 +11,7 @@ import LogoutTwoToneIcon from '@mui/icons-material/LogoutTwoTone';
 import FavoriteTwoToneIcon from '@mui/icons-material/FavoriteTwoTone';
 import UndoTwoToneIcon from '@mui/icons-material/UndoTwoTone';
 import PersonAddTwoToneIcon from '@mui/icons-material/PersonAddTwoTone';
+import Grid from '@mui/material/Unstable_Grid2';
 
 import IPlayer from './lib/types/IPlayer';
 import Hand from './components/hand/Hand';
@@ -268,14 +269,12 @@ function App() {
             <div>
               <ScoreBoard game={game} />
               <div>
-                <h3>
-                  <span>Round: {game.round}</span>
-                  <span> | </span>
-                  <span>Dealer: {game.dealer.name}</span>
-                  <span> | </span>
-                  <span>Max cards: {game.maxCards}</span>
-                  { game.gameState === STATE_PLAYING? <span> | Total Bids: {game.roundTotalBids}/{game.cardsInRound}</span>:null }
-                </h3>
+                <Grid className="overview_container" container spacing={2}>
+                  <Grid className="overview_item left" xs={4}>Round: {game.round}</Grid>
+                  <Grid className="overview_item right" xs={8}>Dealer: {game.dealer.name}</Grid>
+                  <Grid className="overview_item left" xs={6}>Max cards: {game.maxCards}</Grid>
+                  { game.gameState === STATE_PLAYING? <Grid className="overview_item right" xs={6}>Total Bids: {game.roundTotalBids}/{game.cardsInRound}</Grid>:null }
+                </Grid>
                 { game.gameState === STATE_DEALING ?<Deal game={game} callback={dealtCallback} />:null }
                 { game.gameState === STATE_BIDDING ?<Bid game={game} callback={bidCallback} />:null }
                 { game.gameState === STATE_PLAYING ?<Hand game={game} callback={handCallback} />:null }

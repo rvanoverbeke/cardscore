@@ -1,17 +1,18 @@
 .scoreboard_container {
     padding: 0px 0px;
-    font-size: medium;
+    font-size: 1.5rem;
     font-weight: bold;
     background-color: aliceblue;
 
     .player_score_container {
         border: 1px solid black;
         border-radius: 10px;
+        padding-inline: 1rem;
         margin: 0px;
     }
 
     .player_name {
-        text-align: left;
+        text-align: center;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -27,7 +28,7 @@
     }
 
     .player_round_bid, .player_round_score{
-        font-size: small;
+        font-size: 1.2rem;
         font-weight: normal;
     }
     .badge_ok {
@@ -36,5 +37,5 @@
     .badge_warning {
         background-color: orange;
     }
-    
+
 }

@@ -30,11 +30,28 @@ html, body {
   .toolbar_title{
     flex-grow: 1;
   }
+  .overview_container {
+    font-size: 1.2rem;
+    font-weight: bold;
+    max-width: 90%;
+    margin-inline: auto;
+    margin-block: .5rem;
+    .overview_item {
+      &.left {
+        text-align: left;
+      }
+      &.right {
+        text-align: right;
+      }
+      margin-inline: 0;
+      padding-block: .5rem;
+    }
+  }
   .gameover_container {
     background-image: url('../public/fireworks.png');
     background-size: contain;
     background-repeat: no-repeat;
-    background-position: center center; 
+    background-position: center center;
   }
   .gameover_inner_container {
     background-color: rgba(240, 248, 255, 50%);
